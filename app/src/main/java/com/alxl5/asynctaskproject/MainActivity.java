@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 JSONTask jsonTask = new JSONTask();
-                jsonTask.execute("http://alxl5-domain.esy.es/index.php/ajax/response", null, null);
+                jsonTask.execute("http://alxl5-domain.esy.es/index.php/blog", null, null);
             }
         });
     }
@@ -68,11 +72,29 @@ public class MainActivity extends AppCompatActivity {
                     sb.append(line);
                 }
 
-                return sb.toString();
+                String stringJSON = sb.toString();
+
+                JSONObject jsonObject = new JSONObject(stringJSON);
+                JSONArray jsonArray = jsonObject.getJSONArray("blog");
+
+                StringBuffer stringBufferData = new StringBuffer();
+
+                for(int i = 0; i <jsonArray.length(); i++) {
+
+                    JSONObject resultObject = jsonArray.getJSONObject(i);
+
+                    String id = resultObject.getString("id");
+                    stringBufferData.append("ID: " + id + "\n");
+
+                }
+
+                return stringBufferData.toString();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
                 assert connection != null;
